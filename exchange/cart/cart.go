@@ -2,9 +2,9 @@ package cart
 
 import (
 	"errors"
-	"exchange.com/user"
 	"time"
 	"exchange.com/product"
+	"exchange.com/user"
 	"github.com/Rhymond/go-money"
 )
 
@@ -63,3 +63,4 @@ func (c *Cart) delete() error {
     // to implement
     return nil
 }
+
