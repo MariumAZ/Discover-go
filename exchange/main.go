@@ -1,12 +1,14 @@
 package main
 
 import (
-	"time"
+	"database/sql"
 	"log"
-	"exchange.com/cart"
-    "database/sql"
-	_"github.com/go-sql-driver/mysql"
+	"math/rand"
+	"strconv"
+	"time"
 
+	"exchange.com/cart"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type CartTrans interface {
@@ -28,17 +30,11 @@ func ErrorCheck(err error) {
 
 
 func main() {
-	// load the cart... into variable cart
-	newCart := cart.Cart{ID: "125", CurrencyCode:"129M", CreatedAt: time.Now()}
+    rand.Seed(time.Now().UTC().UnixNano())
+	Id := strconv.Itoa(rand.Intn(1000))
+	newCart := cart.Cart{ID: Id , CurrencyCode:"129M", CreatedAt: time.Now()}
 	db, err := sql.Open("mysql", "root:password@tcp(127.0.0.1:3306)/cart")
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    pingErr := db.Ping()
-    if pingErr != nil {
-        log.Fatal(pingErr)
-    }
+	ErrorCheck(err)
     log.Println("Connected!")
     
 	//When a package is imported prefixed with a blank identifier, the init function of the package is called.
@@ -53,8 +49,8 @@ func main() {
     res, e := stmt.Exec(newCart.ID, newCart.CurrencyCode, newCart.CreatedAt)
     ErrorCheck(e)
  
-    id, e := res.LastInsertId()
-    ErrorCheck(e)
+    id, er := res.LastInsertId()
+    ErrorCheck(er)
  
     log.Println("Insert id", id)
 
@@ -67,10 +63,6 @@ func main() {
 		return
 	}
 	log.Println("Total Price", totalPrice.Display())
-
-
-
-	
 	err = newCart.Lock()
 	if err != nil {
 		log.Printf("impossible to lock the cart: %s", err)
